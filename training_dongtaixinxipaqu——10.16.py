@@ -35,7 +35,7 @@ if __name__ == "__main__":
         
         print(text_list[1])   #第五项元组的第二项取出（去除content：）
 
-        #目前是如何取出content中的text内容
+        #目前是如何取出content中的text内容 10.16修改
         
 
             
