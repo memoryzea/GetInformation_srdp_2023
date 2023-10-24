@@ -38,18 +38,13 @@ class auto():
     def spider(self):
         text_list = []#存比赛信息文件
         res, title = self.crawl(self.url,self.data)
-        flg = conn.sadd('10',title)
+        flg = conn.sadd('1sa0',title)
         if flg:
             news_list = list(res['news'].items())#将jason文件中dic类型转化为list
             for i in news_list[4]:  #将list中第五项content取出
                 text_list.append(i)
             text_detail = "".join(text_list[1])
-            with open('关于开展第十五届蓝桥杯大赛“全国高校备赛季”活动的通知.pdf', 'w',encoding='utf-8') as f:
-                f.write(text_detail)
-            with open('关于开展第十五届蓝桥杯大赛“全国高校备赛季”活动的通知.pdf', 'rb') as file:
-                soup = BeautifulSoup(file, 'html.parser')
-            text = soup.get_text()
-            self.save(content=text,title=title)
+            self.save(content=text_detail,title=title)
             print('加载完成')
         else:
             import time
@@ -66,13 +61,18 @@ class auto():
     
     
     def save(self,content,title):
+        print('加载中')
+        with open(title+'.pdf', 'w',encoding='utf-8') as f:
+            f.write(content)
+        with open(title+'.pdf', 'rb') as file:
+            soup = BeautifulSoup(file, 'html.parser')
+        text = soup.get_text()
         fp = open(title+'.txt','w',encoding='utf-8')
-        fp.write(content)
+        fp.write(text)
     
 if __name__ == "__main__":
     x=auto()
     x.run()
-
 
 
 
