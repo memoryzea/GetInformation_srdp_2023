@@ -26,7 +26,7 @@ class nuedc():
         res = self.crawl(self.url)
         soup = BeautifulSoup(res.text,'lxml')
         list = soup.find('div', class_='newsMain-liText')
-        if re.search(sample,list.text):
+        if re.search(sample,list.a.text):
             title = list.a.text
             # print(title)
             flg = conn.sadd('1e啊啊axaas',title) # 随机字符串，勿与之前相同
