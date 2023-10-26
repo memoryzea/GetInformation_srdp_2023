@@ -5,7 +5,7 @@ import re
 import html2text
 
 conn = redis.Redis()    # 比较是否爬取的东西
-sample = "第十六届全国大学生信息安全竞赛信息安全作品赛"   # 输入识别相关内容
+sample = ""   # 输入识别相关内容
 
 class ncsisc():
     def __init__(self):
@@ -24,29 +24,31 @@ class ncsisc():
         print('开始爬取目标网页...')
         res = self.crawl(self.url)
         soup = BeautifulSoup(res.text, 'lxml')
-        for link in soup.select('div[class="tab-pane text-center active"] .right-container div[class="form-group title"]>a'):
-            try:
-                if re.search(sample, link.text):
-                    title = link.text
-                    flg = conn.sadd('1s阿a阿阿松大斯顿啊阿达da61', title)
-                    if flg:
-                        print(title + " is loading...")
-                        detail_url = link['href']
-                        detail_res = self.crawl(detail_url)
-                        detail_soup = BeautifulSoup(detail_res.text, 'lxml')
-                        content_element = detail_soup.find('div', class_='text-left competition-discription')
-                        content = self.html_to_text(str(content_element))
-                        self.save(content, title)
-                    else:
+        list = soup.find('div', class_='form-group title')
+        # print(list.a.text)
+        if re.search(sample,list.a.text):
+            title = list.a.text
+            # print(title)
+            flg = conn.sadd('1e啊abas',title) # 随机字符串，勿与之前相同
+            if flg:
+                print(title+" is loading...")
+                detail_url = list.a['href']
+                detail_txt = self.crawl(detail_url).text
+                detail_soup = BeautifulSoup(detail_txt,'lxml')
+                content_element = detail_soup.find('div', class_='welcome')
+                content = self.html_to_text(str(content_element))
+                self.save(content, title)
+            else:
                         import time
-                        print('暂无新信息，将于24小时后再次爬取...')
-                        time.sleep(60 * 60 * 24)
+                        print('暂无新信息,将于24小时后再次爬取...')
+                        time.sleep(60*60*24)
                         self.spider()
-                else:
-                    pass
-            except KeyError:
-                print("KeyError occurs...")
-        print('爬取结束')
+        else: 
+            pass    
+
+        print('爬取完毕...')
+        print('**************************************************************************')
+    
     
     def html_to_text(self, html_content):
         h = html2text.HTML2Text()
@@ -62,10 +64,9 @@ class ncsisc():
 
 
     def save(self, content, title):
-        content = content
-        fp = open(title + '.md', 'w', encoding='utf-8')
-        fp.write('# ' + title + "\n" + content + "\n")  # 写入Markdown文件
-        print(title + " has been loaded...\n-------------------------------------------------------------------------------\n")
+        fp = open(title + '.txt', 'w', encoding='utf-8')
+        fp.write('                                ' + title + "\n" + content + "\n")  # 写入Markdown文件
+        print(title + " has been loaded...")
     
     def run(self):
         print('爬虫程序开始运行...')
