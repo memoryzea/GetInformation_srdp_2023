@@ -66,8 +66,8 @@ class nuedc():
     
     def run(self):
         print('爬虫程序开始运行...')
-        # while True:
-        self.spider()
+        while True:
+            self.spider()
     
 if __name__ == '__main__':
     x = nuedc()
