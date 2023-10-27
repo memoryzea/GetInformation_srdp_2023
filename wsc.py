@@ -6,10 +6,10 @@ import html2text
 import pymysql
 
 conn = redis.Redis()    # 比较是否爬取的东西
-sample = ""   # 输入识别相关内容
 
-class wsc():
+class class_wsc():
     def __init__(self):
+        self.wsc_sample = ""   # 输入识别相关内容
         self.url = 'http://worldskillschina.mohrss.gov.cn/sszx/tzwj/'
         self.header = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.60'
@@ -28,7 +28,7 @@ class wsc():
         link = soup.find('div',class_='list clearfix')
         tag =link.find('div',class_='listitem')
         try:
-            if re.search(sample, tag.text):
+            if re.search(self.wsc_sample, tag.text):
                 title = tag.a.text
                 flg = conn.sadd('1达da61', title)
                 if flg:
@@ -42,7 +42,7 @@ class wsc():
                 else:
                     import time
                     print('暂无新信息，将于24小时后再次爬取...')
-                    time.sleep(60 * 60 * 24)
+                    time.sleep(60*2)
                     self.spider()
             else:
                 pass
@@ -66,7 +66,7 @@ class wsc():
     def save(self, content, title):
         fp = open(title + '.txt', 'w', encoding='utf-8')
         fp.write('# ' + title + "\n" + content + "\n")  
-        self.todatabase(content=content,title=title)
+        # self.todatabase(content=content,title=title)
         print(title + " has been loaded...")
         
     
@@ -88,5 +88,6 @@ class wsc():
             
     
 if __name__ == '__main__':
-    x = wsc()
+    x = class_wsc()
     x.run()
+
