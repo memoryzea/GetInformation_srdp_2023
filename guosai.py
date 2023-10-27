@@ -4,11 +4,13 @@ import redis
 import re 
 import PyPDF2
 import pymysql
+import time
 
 
+conn = redis.Redis()    #比较是否爬取的东西
 class class_guosai():
     def __init__(self):
-        self.sample_guosai = "2023高教社杯全国大学生数学建模竞赛报名"   #输入识别相关内容
+        self.sample_guosai = ""   #输入识别相关内容
         self.url = 'http://www.mcm.edu.cn/html_cn/block/20ead73cbcf5a1c24b91947f98d7aac2.html'
         self.header = {
             'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.60'
@@ -23,33 +25,34 @@ class class_guosai():
 
     
     def spider(self):
-        print('开始爬取目标网页...')
+        print('(GUOSAI)开始爬取目标网页...')
         res = self.crawl(self.url)
         soup = BeautifulSoup(res.text,'lxml')
-        for list in soup.select('.item>a'):
-            try:
-                if re.search(self.sample_guosai,list.text):
-                    title = list.text
-                    flg = conn.sadd('1asa15',title) # 随机字符串，勿与之前相同
-                    if flg:
-                        print(title+" is loading...")
-                        detail_url = 'http://www.mcm.edu.cn'+list['href']
-                        detail_txt = self.crawl(detail_url).text
-                        detail_soup = BeautifulSoup(detail_txt,'lxml')
-                        new_list = detail_soup.select('#divRightMain #divNodeAttachmentsList>.item>a')[0]
-                        pdf_url = 'http://www.mcm.edu.cn'+new_list['href']
-                        pdf_res = self.crawl(pdf_url)
-                        self.save(content=pdf_res.content,title=title)
-                    else:
-                        import time
-                        print('暂无新信息,将于24小时后再次爬取...')
-                        time.sleep(60*2)
-                        self.spider()
-                else: 
-                    pass
-            except KeyError:
-                print("KeyError occurs...")
-        print('爬取完毕...')
+        div = soup.find('div',id='divRightNodes')
+        list = div.find('div',class_='item')
+        try:
+            if re.search(self.sample_guosai,list.a.text):
+                title = list.a.text
+                flg = conn.sadd('1asa15',title) # 随机字符串，勿与之前相同
+                if flg:
+                    print(title+" is loading...")
+                    detail_url = 'http://www.mcm.edu.cn'+list.a['href']
+                    detail_txt = self.crawl(detail_url).text
+                    detail_soup = BeautifulSoup(detail_txt,'lxml')
+                    new_div = detail_soup.find('div', id='divNodeAttachmentsList')
+                    new_list = new_div.find('div', class_='item').a
+                    pdf_url = 'http://www.mcm.edu.cn'+new_list['href']
+                    pdf_res = self.crawl(pdf_url)
+                    self.save(content=pdf_res.content,title=title)
+                else:
+                    print('(GUOSAI)暂无新信息,将于24小时后再次爬取...')
+            else: 
+                pass
+        except KeyError:
+            print("KeyError occurs...")
+        print('*************************(GUOSAI)爬取完毕...********************')
+        time.sleep(10)
+        # print('*************************************************************************************')
     
     
     
@@ -79,11 +82,9 @@ class class_guosai():
         conn.close()
         
     def run(self):
-        while True:
-            print('爬虫程序开始运行...')
-            self.spider()
+        print('*****************************(GUOSAI)爬虫程序开始运行...********************************')
+        self.spider()
     
 if __name__ == '__main__':
-    conn = redis.Redis()    #比较是否爬取的东西
     x = class_guosai()
     x.run()
