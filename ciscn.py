@@ -6,10 +6,10 @@ import html2text
 import pymysql
 
 conn = redis.Redis()    # 比较是否爬取的东西
-sample = ""   # 输入识别相关内容
 
-class ncsisc():
+class class_ciscn():
     def __init__(self):
+        self.sample_cisn = ""   # 输入识别相关内容
         self.url = 'http://www.ciscn.cn/competition'
         self.header = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.60'
@@ -27,7 +27,7 @@ class ncsisc():
         soup = BeautifulSoup(res.text, 'lxml')
         list = soup.find('div', class_='form-group title')
         # print(list.a.text)
-        if re.search(sample,list.a.text):
+        if re.search(self.sample_cisn,list.a.text):
             title = list.a.text
             # print(title)
             flg = conn.sadd('1e啊abas',title) # 随机字符串，勿与之前相同
@@ -42,7 +42,7 @@ class ncsisc():
             else:
                         import time
                         print('暂无新信息,将于24小时后再次爬取...')
-                        time.sleep(60*60*24)
+                        time.sleep(60*2)
                         self.spider()
         else: 
             pass    
@@ -77,7 +77,7 @@ class ncsisc():
     def save(self, content, title):
         fp = open(title + '.txt', 'w', encoding='utf-8')
         fp.write('                                ' + title + "\n" + content + "\n")  # 写入Markdown文件
-        self.todatabase(content=content,title=title)
+        # self.todatabase(content=content,title=title)
         print(title + " has been loaded...")
     
     def run(self):
@@ -87,5 +87,6 @@ class ncsisc():
             
     
 if __name__ == '__main__':
-    x = ncsisc()
+    x = class_ciscn()
     x.run()
+
