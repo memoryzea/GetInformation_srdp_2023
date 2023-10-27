@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import redis
 import re 
 import html2text
+import pymysql
 
 conn = redis.Redis()    #比较是否爬取的东西
 sample = ""   #输入识别相关内容
@@ -62,7 +63,18 @@ class nuedc():
     def save(self,content,title):
         fp = open(title+'.txt','w',encoding='utf-8')
         fp.write(content+"\n") #写入文件
+        self.todatabase(content=content,title=title)
         print(title+" has been loaded...")
+
+    def todatabase(self,title,content):
+        conn = pymysql.connect(host='127.0.0.1',port=3306,user='tester',password='Srdp20232',db = 'comp_srdp')
+        cursor = conn.cursor()
+        sql = "INSERT INTO comp (title, content) VALUES (%s, %s)"
+        data = (title,content)
+        cursor.execute(sql,data)
+        conn.commit()
+        cursor.close()
+        conn.close()
     
     def run(self):
         print('爬虫程序开始运行...')
@@ -72,3 +84,4 @@ class nuedc():
 if __name__ == '__main__':
     x = nuedc()
     x.run()
+
