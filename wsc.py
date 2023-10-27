@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import redis
 import re 
 import html2text
+import pymysql
 
 conn = redis.Redis()    # 比较是否爬取的东西
 sample = ""   # 输入识别相关内容
@@ -37,7 +38,6 @@ class wsc():
                     detail_soup = BeautifulSoup(detail_res.text, 'lxml')
                     content_element = detail_soup.find('div', class_='detail-content')
                     content = self.html_to_text(str(content_element))
-                    # content = content_element.text
                     self.save(content, title)
                 else:
                     import time
@@ -66,8 +66,21 @@ class wsc():
     def save(self, content, title):
         fp = open(title + '.txt', 'w', encoding='utf-8')
         fp.write('# ' + title + "\n" + content + "\n")  
-        print(title + " has been loaded...\n-------------------------------------------------------------------------------\n")
+        self.todatabase(content=content,title=title)
+        print(title + " has been loaded...")
+        
     
+    
+    def todatabase(self,title,content):
+        conn = pymysql.connect(host='127.0.0.1',port=3306,user='tester',password='Srdp20232',db = 'comp_srdp')
+        cursor = conn.cursor()
+        sql = "INSERT INTO comp (title, content) VALUES (%s, %s)"
+        data = (title,content)
+        cursor.execute(sql,data)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
     def run(self):
         print('爬虫程序开始运行...')
         while True:
