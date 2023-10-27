@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import redis
 import re 
 import pymysql
+import time
 
 conn = redis.Redis()    #比较是否爬取的东西
 class class_cet():
@@ -22,7 +23,7 @@ class class_cet():
 
     
     def spider(self):
-        print('开始爬取目标网页...')
+        print('(CET)开始爬取目标网页...')
         res = self.crawl(self.url)
         soup = BeautifulSoup(res.text,'lxml')
         list = soup.find('span', id='ReportIDname')
@@ -47,12 +48,12 @@ class class_cet():
                     print("KeyError occurs...")
             else:
                 #已爬取，等待24h再次爬取
-                import time
-                print('暂无新信息,将于24小时后再次爬取...')
-                time.sleep(60*2)
-                self.spider()
-        print('爬取完毕')
-        print('*************************************************************************************')
+                print('(CET)暂无新信息,将于24小时后再次爬取...')
+                
+                
+        print('*******************(CET)爬取完毕******************')
+        time.sleep(10)
+        # print('*************************************************************************************')
             
     
     def save(self,content,title):
@@ -62,9 +63,8 @@ class class_cet():
         print(title+" has been loaded...")
     
     def run(self):
-        print('爬虫程序开始运行...')
-        while True:
-            self.spider()
+        print('*********************************(CET)爬虫程序开始运行...***********************************')
+        self.spider()
             
     def todatabase(self,title,content):
         conn = pymysql.connect(host='127.0.0.1',port=3306,user='tester',password='Srdp20232',db = 'comp_srdp')
