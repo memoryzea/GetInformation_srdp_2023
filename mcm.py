@@ -3,10 +3,11 @@ import requests
 from bs4 import BeautifulSoup
 import redis
 import pymysql
-
+# import re 
 
 conn = redis.Redis()    #比较是否爬取的东西
-class mcm():
+# sample = "报名"   #输入识别相关内容
+class class_mcm():
     def __init__(self):
         self.url = 'https://www.contest.comap.com/undergraduate/contests/mcm/instructions.php'
         self.header = {
@@ -37,7 +38,7 @@ class mcm():
             #已爬取，等待24h再次爬取
             import time
             print('暂无新信息,将于24小时后再次爬取...')
-            time.sleep(60*60*24)
+            time.sleep(60*2)
             self.spider()
         print('爬取完毕')
         print('*************************************************************************************')
@@ -54,7 +55,7 @@ class mcm():
     def save(self,content):
         fp = open('MCM通知.txt','w',encoding='utf-8')
         fp.write(content) #写入文件
-        self.todatabase(content=content,title='MCM通知')
+        # self.todatabase(content=content,title='MCM通知')
         print("MCM通知.txt has been loaded...")
     
     def run(self):
@@ -74,8 +75,10 @@ class mcm():
         
         
 if __name__ == '__main__':
-    x = mcm()
+    x = class_mcm()
     x.run()
+    
+    
     
     
     
