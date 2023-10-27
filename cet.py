@@ -5,9 +5,9 @@ import re
 import pymysql
 
 conn = redis.Redis()    #比较是否爬取的东西
-sample = "报名"   #输入识别相关内容
-class cet():
+class class_cet():
     def __init__(self):
+        self.sample_cet = "报名"   #输入识别相关内容
         self.url = 'https://cet.neea.edu.cn/html1/category/16093/1124-1.htm'
         self.header = {
             'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.60'
@@ -27,7 +27,7 @@ class cet():
         soup = BeautifulSoup(res.text,'lxml')
         list = soup.find('span', id='ReportIDname')
         # print(list.text)
-        if re.search(sample,list.text):
+        if re.search(self.sample_cet,list.text):
             title = list.text
             flg = conn.sadd('5zdaa',title) # 随机字符串，勿与之前相同
             if flg:
@@ -42,14 +42,14 @@ class cet():
                 try:
                     content = details.text #爬取对应标签里的text内容
                     self.save(content=content,title=title)
-                    self.todatabase(content=content,title=title)
+                    
                 except KeyError:
                     print("KeyError occurs...")
             else:
                 #已爬取，等待24h再次爬取
                 import time
                 print('暂无新信息,将于24小时后再次爬取...')
-                time.sleep(60*60*24)
+                time.sleep(60*2)
                 self.spider()
         print('爬取完毕')
         print('*************************************************************************************')
@@ -58,6 +58,7 @@ class cet():
     def save(self,content,title):
         fp = open(title+'.txt','w',encoding='utf-8')
         fp.write('                                                                '+title+"\n"+content+"\n") #写入文件
+        # self.todatabase(content=content,title=title)
         print(title+" has been loaded...")
     
     def run(self):
@@ -76,8 +77,11 @@ class cet():
         conn.close()
     
 if __name__ == '__main__':
-    x = cet()
+    x = class_cet()
     x.run()
     
+    
+    
+
     
     
