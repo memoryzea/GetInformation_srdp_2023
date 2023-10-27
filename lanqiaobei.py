@@ -5,7 +5,7 @@ import pymysql
 
 
 conn = redis.Redis()
-class lanqiaobei():
+class class_lanqiao():
     def __init__(self):
         self.headers = {
          'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.60'
@@ -48,7 +48,7 @@ class lanqiaobei():
         else:
             import time
             print('暂无新信息,将于24小时后再次爬取...')
-            time.sleep(60*60*24)
+            time.sleep(60*2)
             self.spider()
             
         
@@ -68,7 +68,7 @@ class lanqiaobei():
         text = soup.get_text()
         fp = open(title+'.txt','w',encoding='utf-8')
         fp.write(text)
-        self.todatabase(content=text,title=title)
+        # self.todatabase(content=text,title=title)
         
     def todatabase(self,title,content):
         conn = pymysql.connect(host='127.0.0.1',port=3306,user='tester',password='Srdp20232',db = 'comp_srdp')
@@ -81,11 +81,21 @@ class lanqiaobei():
         conn.close()
     
 if __name__ == "__main__":
-    x=lanqiaobei()
+    x=class_lanqiao()
     x.run()
 
 
+
+
+
+
         
+        
+    
+           
+
+         
+
     
            
 
