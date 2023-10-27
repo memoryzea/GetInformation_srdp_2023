@@ -4,6 +4,7 @@ import redis
 import re 
 import html2text
 import pymysql
+import time
 
 conn = redis.Redis()    # 比较是否爬取的东西
 
@@ -22,7 +23,7 @@ class class_wsc():
             return res
 
     def spider(self):
-        print('开始爬取目标网页...')
+        print('(WSC)开始爬取目标网页...')
         res = self.crawl(self.url)
         soup = BeautifulSoup(res.text, 'lxml')
         link = soup.find('div',class_='list clearfix')
@@ -40,15 +41,14 @@ class class_wsc():
                     content = self.html_to_text(str(content_element))
                     self.save(content, title)
                 else:
-                    import time
-                    print('暂无新信息，将于24小时后再次爬取...')
-                    time.sleep(60*2)
-                    self.spider()
+                    print('(WSC)暂无新信息，将于24小时后再次爬取...')
+
             else:
                 pass
         except KeyError:
             print("KeyError occurs...")
-        print('爬取结束')
+        print('****************************(WSC)爬取结束***********************************')
+        time.sleep(10)
     
     def html_to_text(self, html_content):
         h = html2text.HTML2Text()
@@ -82,12 +82,10 @@ class class_wsc():
         conn.close()
         
     def run(self):
-        print('爬虫程序开始运行...')
-        while True:
-            self.spider()
+        print('**************************(WSC)爬虫程序开始运行...*****************************')
+        self.spider()
             
     
 if __name__ == '__main__':
     x = class_wsc()
     x.run()
-
