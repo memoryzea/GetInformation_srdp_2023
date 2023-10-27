@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import redis
 import pymysql
-
+import time
 
 conn = redis.Redis()
 class class_lanqiao():
@@ -35,6 +35,7 @@ class class_lanqiao():
         return detail_json, id_title
     
     def spider(self):
+        print('(LANQIAO)开始爬取目标网页...')
         text_list = []#存比赛信息文件
         res, title = self.crawl(self.url,self.data)
         flg = conn.sadd('1sa0',title)
@@ -44,23 +45,23 @@ class class_lanqiao():
                 text_list.append(i)
             text_detail = "".join(text_list[1])
             self.save(content=text_detail,title=title)
-            print('加载完成')
+            print(title+'加载完成')
         else:
-            import time
-            print('暂无新信息,将于24小时后再次爬取...')
-            time.sleep(60*2)
-            self.spider()
+            print('(LANQIAO)暂无新信息,将于24小时后再次爬取...')
+        print('*********************(LANQIAO)爬取完毕...*********************')
+        time.sleep(10)
+        # print('*************************************************************************************')
+
             
         
     
     def run(self):
-        while True:
-            print('爬虫程序开始运行...')
-            self.spider()
+        print('**************************(LANQIAO)爬虫程序开始运行...*******************************')
+        self.spider()
     
     
     def save(self,content,title):
-        print('加载中')
+        print(title+'加载中')
         with open(title+'.pdf', 'w',encoding='utf-8') as f:
             f.write(content)
         with open(title+'.pdf', 'rb') as file:
@@ -83,10 +84,6 @@ class class_lanqiao():
 if __name__ == "__main__":
     x=class_lanqiao()
     x.run()
-
-
-
-
 
 
         
