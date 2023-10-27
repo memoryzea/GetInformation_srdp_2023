@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import redis
 import re 
+import pymysql
 
 conn = redis.Redis()    #比较是否爬取的东西
 sample = "报名"   #输入识别相关内容
@@ -28,7 +29,7 @@ class cet():
         # print(list.text)
         if re.search(sample,list.text):
             title = list.text
-            flg = conn.sadd('5爱azdaxnzdaa',title) # 随机字符串，勿与之前相同
+            flg = conn.sadd('5zdaa',title) # 随机字符串，勿与之前相同
             if flg:
                 #未爬取
                 print(title+" is loading...")
@@ -41,6 +42,7 @@ class cet():
                 try:
                     content = details.text #爬取对应标签里的text内容
                     self.save(content=content,title=title)
+                    self.todatabase(content=content,title=title)
                 except KeyError:
                     print("KeyError occurs...")
             else:
@@ -62,6 +64,16 @@ class cet():
         print('爬虫程序开始运行...')
         while True:
             self.spider()
+            
+    def todatabase(self,title,content):
+        conn = pymysql.connect(host='127.0.0.1',port=3306,user='tester',password='Srdp20232',db = 'comp_srdp')
+        cursor = conn.cursor()
+        sql = "INSERT INTO comp (title, content) VALUES (%s, %s)"
+        data = (title,content)
+        cursor.execute(sql,data)
+        conn.commit()
+        cursor.close()
+        conn.close()
     
 if __name__ == '__main__':
     x = cet()
