@@ -1,12 +1,11 @@
 import requests
-import json
 from bs4 import BeautifulSoup
 import redis
-import pdfminer
+import pymysql
 
 
 conn = redis.Redis()
-class auto():
+class lanqiaobei():
     def __init__(self):
         self.headers = {
          'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.60'
@@ -69,19 +68,23 @@ class auto():
         text = soup.get_text()
         fp = open(title+'.txt','w',encoding='utf-8')
         fp.write(text)
+        self.todatabase(content=text,title=title)
+        
+    def todatabase(self,title,content):
+        conn = pymysql.connect(host='127.0.0.1',port=3306,user='tester',password='Srdp20232',db = 'comp_srdp')
+        cursor = conn.cursor()
+        sql = "INSERT INTO comp (title, content) VALUES (%s, %s)"
+        data = (title,content)
+        cursor.execute(sql,data)
+        conn.commit()
+        cursor.close()
+        conn.close()
     
 if __name__ == "__main__":
-    x=auto()
+    x=lanqiaobei()
     x.run()
 
 
-
-
-
-#############################################
-##################10/24#######################
-##############################################
-        
         
     
            
