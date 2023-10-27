@@ -5,7 +5,7 @@ import pymysql
 
 
 conn = redis.Redis()
-class daying():
+class class_daying():
     def __init__(self):
         self.headers = {
          'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.60'
@@ -34,7 +34,7 @@ class daying():
     def spider(self):
         text_list = []#存比赛信息文件
         res, title = self.crawl(self.url,self.data)
-        flg = conn.sadd('1sa0撒旦sd',title) # 随机字符串，勿与之前相同
+        flg = conn.sadd('1sa撒旦sd',title) # 随机字符串，勿与之前相同
         if flg:
             news_list = list(res['data'].items())#将jason文件中dic类型转化为list
             for i in news_list[1]:  #将list中第2项content取出
@@ -45,7 +45,7 @@ class daying():
         else:
             import time
             print('暂无新信息,将于24小时后再次爬取...')
-            time.sleep(60*60*24)
+            time.sleep(60*2)
             self.spider()
             
         
@@ -64,7 +64,7 @@ class daying():
             soup = BeautifulSoup(file, 'html.parser')
         text = soup.get_text()
         fp = open(title+'.txt','w',encoding='utf-8')
-        self.todatabase(content=text,title=title)
+        # self.todatabase(content=text,title=title)
         fp.write(text)
         
     def todatabase(self,title,content):
@@ -78,5 +78,5 @@ class daying():
         conn.close()
         
 if __name__ == "__main__":
-    x=daying()
+    x=class_daying()
     x.run()
