@@ -2,11 +2,11 @@ import html2text
 import requests
 from bs4 import BeautifulSoup
 import redis
-# import re 
+import pymysql
+
 
 conn = redis.Redis()    #比较是否爬取的东西
-# sample = "报名"   #输入识别相关内容
-class cet():
+class mcm():
     def __init__(self):
         self.url = 'https://www.contest.comap.com/undergraduate/contests/mcm/instructions.php'
         self.header = {
@@ -54,6 +54,7 @@ class cet():
     def save(self,content):
         fp = open('MCM通知.txt','w',encoding='utf-8')
         fp.write(content) #写入文件
+        self.todatabase(content=content,title='MCM通知')
         print("MCM通知.txt has been loaded...")
     
     def run(self):
@@ -61,9 +62,22 @@ class cet():
         while True:
             self.spider()
     
+    def todatabase(self,title,content):
+        conn = pymysql.connect(host='127.0.0.1',port=3306,user='tester',password='Srdp20232',db = 'comp_srdp')
+        cursor = conn.cursor()
+        sql = "INSERT INTO comp (title, content) VALUES (%s, %s)"
+        data = (title,content)
+        cursor.execute(sql,data)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        
 if __name__ == '__main__':
-    x = cet()
+    x = mcm()
     x.run()
+    
+    
     
     
     
