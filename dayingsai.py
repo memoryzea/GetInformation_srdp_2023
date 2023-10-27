@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import redis
 import pymysql
-
+import time
 
 conn = redis.Redis()
 class class_daying():
@@ -41,23 +41,23 @@ class class_daying():
                 text_list.append(i)
             text_detail = "".join(text_list[1])
             self.save(content=text_detail,title=title)
-            print('加载完成')
+            print(title+'加载完成...')
         else:
-            import time
-            print('暂无新信息,将于24小时后再次爬取...')
-            time.sleep(60*2)
-            self.spider()
+            print('(DAYING)暂无新信息,将于24小时后再次爬取...')
+        print('*********************(DAYING)爬取完毕*******************')
+        time.sleep(10)
+        # print('*************************************************************************************')
+            
             
         
     
     def run(self):
-        print('爬虫程序开始运行...')
-        while True:
-            self.spider()
+        print('****************************(DAYING)爬虫程序开始运行...*******************************')
+        self.spider()
     
     
     def save(self,content,title):
-        print('加载中')
+        print(title+'加载中...')
         with open(title+'.pdf', 'w',encoding='utf-8') as f:
             f.write(content)
         with open(title+'.pdf', 'rb') as file:
