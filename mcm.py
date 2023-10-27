@@ -3,7 +3,8 @@ import requests
 from bs4 import BeautifulSoup
 import redis
 import pymysql
-# import re 
+import time
+
 
 conn = redis.Redis()    #比较是否爬取的东西
 # sample = "报名"   #输入识别相关内容
@@ -23,7 +24,7 @@ class class_mcm():
 
     
     def spider(self):
-        print('开始爬取目标网页...')
+        print('(MCM)开始爬取目标网页...')
         res = self.crawl(self.url)
         soup = BeautifulSoup(res.text,'lxml')
         title = soup.find('span', style='font-size:16.0pt;mso-bidi-font-size:12.0pt')
@@ -36,12 +37,10 @@ class class_mcm():
             self.save(content)
         else:
             #已爬取，等待24h再次爬取
-            import time
-            print('暂无新信息,将于24小时后再次爬取...')
-            time.sleep(60*2)
-            self.spider()
-        print('爬取完毕')
-        print('*************************************************************************************')
+            print('(MCM)暂无新信息,将于24小时后再次爬取...')
+        print('**********************(MCM)爬取完毕***********************')
+        time.sleep(10)
+        # print('*************************************************************************************')
             
     
     def html_to_text(self, html_content):
@@ -59,9 +58,8 @@ class class_mcm():
         print("MCM通知.txt has been loaded...")
     
     def run(self):
-        print('爬虫程序开始运行...')
-        while True:
-            self.spider()
+        print('**************************(MCM)爬虫程序开始运行...*************************')
+        self.spider()
     
     def todatabase(self,title,content):
         conn = pymysql.connect(host='127.0.0.1',port=3306,user='tester',password='Srdp20232',db = 'comp_srdp')
@@ -77,6 +75,7 @@ class class_mcm():
 if __name__ == '__main__':
     x = class_mcm()
     x.run()
+    
     
     
     
