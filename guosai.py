@@ -3,11 +3,11 @@ from bs4 import BeautifulSoup
 import redis
 import re 
 import PyPDF2
-import io
+import pymysql
 
 conn = redis.Redis()    #比较是否爬取的东西
 sample = "2023高教社杯全国大学生数学建模竞赛报名"   #输入识别相关内容
-class auto():
+class guosai():
     def __init__(self):
         self.url = 'http://www.mcm.edu.cn/html_cn/block/20ead73cbcf5a1c24b91947f98d7aac2.html'
         self.header = {
@@ -30,7 +30,7 @@ class auto():
             try:
                 if re.search(sample,list.text):
                     title = list.text
-                    flg = conn.sadd('1661415',title) # 随机字符串，勿与之前相同
+                    flg = conn.sadd('166s15',title) # 随机字符串，勿与之前相同
                     if flg:
                         print(title+" is loading...")
                         detail_url = 'http://www.mcm.edu.cn'+list['href']
@@ -46,7 +46,7 @@ class auto():
                         time.sleep(60*60*24)
                         self.spider()
                 else: 
-                    print('无对应内容...')    
+                    pass
             except KeyError:
                 print("KeyError occurs...")
         print('爬取完毕...')
@@ -57,13 +57,32 @@ class auto():
 
         fp = open(title+'.pdf','wb')
         fp.write(content) #写入文件
+        pdf_file = open(title+'.pdf', 'rb')
+        pdf_reader = PyPDF2.PdfReader(pdf_file)
+        text = ""
+        for page in pdf_reader.pages:
+            text += page.extract_text()
+        with open(title+'.txt', 'w',encoding='utf-8') as txt_file:
+            txt_file.write(text)
+        pdf_file.close()
+        self.todatabase(content=text,title=title)
         print(title+" has been loaded...\n-------------------------------------------------------------------------------\n")
     
+    def todatabase(self,title,content):
+        conn = pymysql.connect(host='127.0.0.1',port=3306,user='tester',password='Srdp20232',db = 'comp_srdp')
+        cursor = conn.cursor()
+        sql = "INSERT INTO comp (title, content) VALUES (%s, %s)"
+        data = (title,content)
+        cursor.execute(sql,data)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
     def run(self):
         while True:
             print('爬虫程序开始运行...')
             self.spider()
     
 if __name__ == '__main__':
-    x = auto()
+    x = guosai()
     x.run()
