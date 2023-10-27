@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import redis
+import pymysql
 
 
 conn = redis.Redis()
@@ -33,7 +34,7 @@ class daying():
     def spider(self):
         text_list = []#存比赛信息文件
         res, title = self.crawl(self.url,self.data)
-        flg = conn.sadd('1sa0dsd',title) # 随机字符串，勿与之前相同
+        flg = conn.sadd('1sa0撒旦sd',title) # 随机字符串，勿与之前相同
         if flg:
             news_list = list(res['data'].items())#将jason文件中dic类型转化为list
             for i in news_list[1]:  #将list中第2项content取出
@@ -63,7 +64,18 @@ class daying():
             soup = BeautifulSoup(file, 'html.parser')
         text = soup.get_text()
         fp = open(title+'.txt','w',encoding='utf-8')
+        self.todatabase(content=text,title=title)
         fp.write(text)
+        
+    def todatabase(self,title,content):
+        conn = pymysql.connect(host='127.0.0.1',port=3306,user='tester',password='Srdp20232',db = 'comp_srdp')
+        cursor = conn.cursor()
+        sql = "INSERT INTO comp (title, content) VALUES (%s, %s)"
+        data = (title,content)
+        cursor.execute(sql,data)
+        conn.commit()
+        cursor.close()
+        conn.close()
         
 if __name__ == "__main__":
     x=daying()
