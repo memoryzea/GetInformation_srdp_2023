@@ -15,7 +15,7 @@ conn = redis.Redis
 def run_class(class_obj):
     instance = class_obj()
     instance.run()
-    time.sleep(30)
+    time.sleep(10)
         
 def run():
     import time
@@ -29,7 +29,4 @@ def run():
 if __name__ == '__main__':
     classes_to_run = [class_guosai, class_cet, class_ciscn, class_daying, class_lanqiao, class_mcm, class_nuedc, class_wsc]
     run()
-    # pool_size = 2
-    # with concurrent.futures.ThreadPoolExecutor(max_workers=pool_size) as executor:
-    #     executor.map(run_class, classes_to_run)
 
